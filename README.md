@@ -28,5 +28,9 @@ Install via [homebrew](https://brew.sh/): `brew install ffmpeg`.
 ## Usage
 Run `python main.py` and follow the prompts. If it's your first time running the script, you will
 be prompted to log in to your google account. To do so, click on the link provided and follow the
-Google instructions. Once this is done, go back to the terminal and press **Enter**. The script will
-then proceed to download your liked songs to a `Downloads` folder.
+Google instructions. Once this is done, go back to the terminal and press **Enter**. You will then
+be asked how many songs you wish to download. Keep in mind that ytmusicapi can only access musics in
+chunks, entering "18" may therefore very well lead to 20 or 50 songs being downloaded. Once you have
+entered a valid number *n*, the script will proceed to download your *n* most recently liked songs to
+a `Downloads` folder in the same directory as the script. If some songs are already present in the
+said folder, they will be skipped.

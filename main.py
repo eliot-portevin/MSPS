@@ -19,10 +19,19 @@ def main():
     print_console_title('Loading authentification file')
     ytmusic = YTMusic('oauth.json')
 
+    # Request number of liked songs to download
+    n = -1
+    while n < 0:
+        try:
+            n = int(input('How many songs do you want to download?\n'
+                          '>> '))
+        except ValueError:
+            print('Please enter a valid number.')
+
     # Get liked songs. Returns a dictionary of the n last liked musics containing their video id, privacy, title,
     # thumbnails, description, trackCount, views, tracks and duration (in seconds). Songs are stored in the tracks key
     print_console_title('Retrieving liked songs from YouTube Music')
-    liked_songs = ytmusic.get_liked_songs(limit=1000)
+    liked_songs = ytmusic.get_liked_songs(limit=n)
 
     # Iterate through liked songs and download them if they haven't been downloaded before
     for idx, song in enumerate(liked_songs['tracks']):
