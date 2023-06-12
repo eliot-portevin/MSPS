@@ -36,14 +36,21 @@ zip file and add the `bin` folder to your PATH.
 
 Install via [homebrew](https://brew.sh/): `brew install ffmpeg`.
 
+### TKinter
+
+This is required at the beginning of the program to choose which folder to download the songs to.
+The installation instructions can be found [here](https://tkdocs.com/tutorial/install.html).
+
 ## Usage
 
 Run `python main.py` and follow the prompts. If it's your first time running the script, you will
 be prompted to log in to your Google account. To do so, click on the link provided and follow the
 Google instructions. Once this is done, go back to the terminal and press **Enter**.
 
-You will then be asked how many songs you wish to download. Keep in mind that ytmusicapi can only access
-musics in chunks, entering "18" may therefore very well lead to 20 or 50 songs being downloaded. Once you
-have entered a valid number *n*, the script will proceed to download your *n* most recently liked songs
-to a `Downloads` folder in the same directory as the script. If some songs are already present in the
-said folder, they will be skipped.
+TKinter will then open a file explorer window. Select the folder you wish to download the songs to.
+
+Finally, you will be asked (in the terminal) how many songs you wish to download. Keep in mind that ytmusicapi can
+only access musics in chunks, entering "18" may therefore very well lead to 20 or 50 songs being downloaded. Once you
+have entered a valid number *n*, the script will proceed to download your *n* most recently liked songs to the
+folder you chose previously. If some songs you are downloading are already present in the said folder, they will be
+skipped.
