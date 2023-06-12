@@ -1,2 +1,8 @@
+# Authentication file
 oauth.json
+
+# Musics Downloaded
 Downloads/
+
+# IDE
+.idea/
