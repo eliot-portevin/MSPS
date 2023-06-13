@@ -24,8 +24,9 @@ def main():
     # Ask where to download songs
     root = Tk()
     root.withdraw()
-    filepath = filedialog.askdirectory(title='Select where to download songs',
-                                       initialdir=os.getcwd()) + '/'
+    directory = filedialog.askdirectory(title='Select where to download songs',
+                                       initialdir=os.getcwd())
+
     root.destroy()
 
     # Request number of liked songs to download
@@ -44,8 +45,8 @@ def main():
 
     # Iterate through liked songs and download them if they haven't been downloaded before
     for idx, song in enumerate(liked_songs['tracks']):
-        filename = f'{filepath}{format_song_title(song["title"])}.mp3'
-        if not os.path.exists(filename):
+        filepath = os.path.join(directory, f'{format_song_title(song["title"])}.mp3')
+        if not os.path.exists(filepath):
             # Convert artists from list to string
             artists = ''
             for artist in song['artists']:
@@ -54,11 +55,10 @@ def main():
 
             print_console_title(f'({idx}/{len(liked_songs)}) Downloading {song["title"]} by {artists}')
 
-            download_name = format_song_title(f'{song["title"]}')
             video_url = f'https://music.youtube.com/watch?v={song["videoId"]}'
             call(['yt-dlp', video_url, '-x', '--audio-format', 'mp3', '--audio-quality', '0', '--embed-metadata',
                   '--embed-thumbnail', '-o',
-                  f'{filepath}{download_name}.%(ext)s'])
+                  filepath])
 
     print_console_title('Done!')
 
