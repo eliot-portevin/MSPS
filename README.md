@@ -19,8 +19,8 @@ Specific instructions for installation can be found
 
 ### ffmpeg
 
-This is required by yt-dlp to merge the audio and video streams. Installation instructions can be
-found [here](https://ffmpeg.org/download.html).
+This is required by yt-dlp to merge the audio and video streams. Installation instructions are
+platform specific.
 
 #### Linux
 
