@@ -43,24 +43,34 @@ def main():
     print_console_title('Retrieving liked songs from YouTube Music')
     liked_songs = ytmusic.get_liked_songs(limit=n)
 
-    # Iterate through liked songs and download them if they haven't been downloaded before
+
+    # Find songs that have already been downloaded
+    to_download = []
     for idx, song in enumerate(liked_songs['tracks']):
         filepath = os.path.join(directory, f'{format_song_title(song["title"])}.mp3')
+
         if not os.path.exists(filepath):
-            # Convert artists from list to string
-            artists = ''
-            for artist in song['artists']:
-                artists += artist['name'] + ', '
-            artists = artists[:-2]
+            to_download.append((song, filepath))
 
-            print_console_title(f'({idx}/{len(liked_songs)}) Downloading {song["title"]} by {artists}')
+    # Download songs
+    for idx, tuple in enumerate(to_download):
+        song = tuple[0]
+        filepath = tuple[1]
 
-            video_url = f'https://music.youtube.com/watch?v={song["videoId"]}'
-            call(['yt-dlp', video_url, '-x', '--audio-format', 'mp3', '--audio-quality', '0', '--embed-metadata',
-                  '--embed-thumbnail', '-o',
-                  filepath])
+        # Convert artists from list to string
+        artists = ''
+        for artist in song['artists']:
+            artists += artist['name'] + ', '
+        artists = artists[:-2]
 
-    print_console_title('Done!')
+        print_console_title(f'({idx}/{len(to_download)}) Downloading {song["title"]} by {artists}')
+
+        video_url = f'https://music.youtube.com/watch?v={song["videoId"]}'
+        call(['yt-dlp', video_url, '-x', '--audio-format', 'mp3', '--audio-quality', '0', '--embed-metadata',
+              '--embed-thumbnail', '-o',
+              filepath])
+
+    print('Done!')
 
 
 def format_song_title(title: str):
