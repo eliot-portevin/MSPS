@@ -1,16 +1,32 @@
-import os
-from os.path import exists
+import sys
 from subprocess import call
 from ytmusicapi import YTMusic
 from tkinter import *
 from tkinter import filedialog
+import os
+from os.path import exists
+
+"""
+Install ytmusicapi with:
+    pip3 install --user ytmusicapi
+    
+Install yt-dlp with:
+    pip3 install --user yt-dlp
+"""
 
 
 def main():
-    # Install dependencies
-    print_console_title('Installing dependencies')
-    call(['pip3', 'install', '--user', 'ytmusicapi'])
-    call(['pip3', 'install', '--user', 'yt-dlp'])
+    # Check if ytmusicapi is installed
+    if 'ytmusicapi' not in sys.modules:
+        print('Please install ytmusicapi with:\n'
+              '    pip3 install --user ytmusicapi')
+        return
+
+    # Check if yt-dlp is installed
+    if 'yt_dlp' not in sys.modules:
+        print('Please install yt-dlp with:\n'
+              '    pip3 install --user yt-dlp')
+        return
 
     # Create authentification file if it doesn't exist
     if not exists('oauth.json'):
@@ -25,7 +41,7 @@ def main():
     root = Tk()
     root.withdraw()
     directory = filedialog.askdirectory(title='Select where to download songs',
-                                       initialdir=os.getcwd())
+                                        initialdir=os.getcwd())
 
     root.destroy()
 
@@ -42,7 +58,6 @@ def main():
     # thumbnails, description, trackCount, views, tracks and duration (in seconds). Songs are stored in the tracks key
     print_console_title('Retrieving liked songs from YouTube Music')
     liked_songs = ytmusic.get_liked_songs(limit=n)
-
 
     # Find songs that have already been downloaded
     to_download = []
