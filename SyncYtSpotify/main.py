@@ -6,6 +6,7 @@ from subprocess import call
 from ytmusicapi import YTMusic
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+from argparse import ArgumentParser
 
 '''
 See https://colab.research.google.com/github/rruff82/misc/blob/main/YTM2Spotify_clean.ipynb#scrollTo=ehOBPh0NrZmE
@@ -14,6 +15,13 @@ for detailed explanations. The authentification process was copied from there.
 
 
 def main():
+    parser = ArgumentParser(description='Synchronise your liked songs between YouTube Music and Spotify.')
+    parser.add_argument('--yt2sp', action='store_true', help='Sync liked songs from YouTube Music to Spotify')
+    parser.add_argument('--sp2yt', action='store_true', help='Sync liked songs from Spotify to YouTube Music')
+    parser.add_argument('--all', action='store_true', help='Sync liked songs from YouTube Music to Spotify and vice versa')
+
+    args = parser.parse_args()
+
     # Authenticate to YouTube Music
     yt = authenticate_yt_music()
 
@@ -26,9 +34,13 @@ def main():
               "NO", "NZ", "PA", "PE", "PH", "PL", "PT", "PY", "SE", "SG", "SK", "SV", "TH", "TR", "TW",
               "US", "UY", "VN"]
 
-    sync_yt_to_sp(yt, sp, market)
-
-    sync_sp_to_yt(yt, sp)
+    if args.yt2sp:
+        sync_yt_to_sp(yt, sp, market)
+    elif args.sp2yt:
+        sync_sp_to_yt(yt, sp)
+    elif args.all:
+        sync_yt_to_sp(yt, sp, market)
+        sync_sp_to_yt(yt, sp)
 
 
 def print_console_title(title: str):
