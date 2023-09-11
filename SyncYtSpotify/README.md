@@ -1,4 +1,4 @@
-# YouTube Music to Spotify Synchronization Script
+# YouTube Music to Spotify Synchronisation Script
 
 This Python script allows you to synchronise your liked songs between YouTube Music and Spotify. It leverages the `ytmusicapi` library for YouTube Music interaction and the `spotipy` library for Spotify interaction. By using this script, you can keep your favorite songs up-to-date across both platforms.
 
@@ -8,7 +8,7 @@ This Python script allows you to synchronise your liked songs between YouTube Mu
 - [Getting Started](#getting-started)
 - [Usage](#usage)
 - [Authentication](#authentication)
-- [Synchronization](#synchronisation)
+- [Synchronisation](#synchronisation)
 - [Results](#results)
 - [License](#license)
 
@@ -38,9 +38,9 @@ Before using this script, you'll need the following:
 
 The script uses command line arguments to determine the synchronisation direction. You can use the following flags:
 
-- `--yt_to_sp`: Sync liked songs from YouTube Music to Spotify.
-- `--sp_to_yt`: Sync liked songs from Spotify to YouTube Music.
-- `--all`: Synchronize liked songs in both directions (YouTube Music to Spotify and Spotify to YouTube Music)
+- `--yt_to_sp`: Synchronise liked songs from YouTube Music to Spotify.
+- `--sp_to_yt`: Synchronise liked songs from Spotify to YouTube Music.
+- `--all`: Synchronise liked songs in both directions (YouTube Music to Spotify and Spotify to YouTube Music)
 - `--help`: Display explanation of command line arguments.
 
 ### Example Usage

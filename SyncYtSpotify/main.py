@@ -18,7 +18,8 @@ def main():
     parser = ArgumentParser(description='Synchronise your liked songs between YouTube Music and Spotify.')
     parser.add_argument('--yt2sp', action='store_true', help='Sync liked songs from YouTube Music to Spotify')
     parser.add_argument('--sp2yt', action='store_true', help='Sync liked songs from Spotify to YouTube Music')
-    parser.add_argument('--all', action='store_true', help='Sync liked songs from YouTube Music to Spotify and vice versa')
+    parser.add_argument('--all', action='store_true', help='Sync liked songs from YouTube Music to Spotify and vice '
+                                                           'versa')
 
     args = parser.parse_args()
 
