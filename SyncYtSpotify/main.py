@@ -15,7 +15,7 @@ for detailed explanations. The authentification process was copied from there.
 
 def main():
     # Authenticate to YouTube Music
-    yt = authenticate_ytmusic()
+    yt = authenticate_yt_music()
 
     # Authenticate to Spotify
     sp = authenticate_spotify()
@@ -28,7 +28,7 @@ def main():
 
     sync_yt_to_sp(yt, sp, market)
 
-    sync_sp_to_yt(yt, sp, market)
+    sync_sp_to_yt(yt, sp)
 
 
 def print_console_title(title: str):
@@ -72,7 +72,7 @@ def authenticate_spotify() -> spotipy.Spotify:
     return spotipy.Spotify(auth_manager=sp_oauth)
 
 
-def authenticate_ytmusic() -> YTMusic:
+def authenticate_yt_music() -> YTMusic:
     print('Authenticating to YouTube Music...')
 
     # Create authentification files if inexistent
@@ -135,7 +135,7 @@ def sync_yt_to_sp(yt: YTMusic, sp: spotipy.Spotify, market: list):
     print('Done! Check yt_to_sp.log for results.')
 
 
-def sync_sp_to_yt(yt: YTMusic, sp: spotipy.Spotify, market: list):
+def sync_sp_to_yt(yt: YTMusic, sp: spotipy.Spotify):
     print_console_title('Syncing liked songs from Spotify to YouTube Music')
 
     # Get liked songs from Spotify
@@ -143,7 +143,6 @@ def sync_sp_to_yt(yt: YTMusic, sp: spotipy.Spotify, market: list):
     sp_liked_songs = get_all_saved_tracks_spotify(sp)
 
     successfully_added = []
-    already_added = []
     not_found = []
 
     for item in progressbar(sp_liked_songs, prefix='Syncing to YouTube Music: '):
@@ -157,7 +156,6 @@ def sync_sp_to_yt(yt: YTMusic, sp: spotipy.Spotify, market: list):
             not_found.append((title, artist))
         else:
             song_id = results[0]['videoId']
-
             yt.rate_song(song_id, 'LIKE')
 
     # Output results to sp_to_yt.log
@@ -204,6 +202,7 @@ def get_all_saved_tracks_spotify(sp, limit_step=50):
         response = sp.current_user_saved_tracks(limit=limit_step, offset=offset)
 
     return tracks
+
 
 if __name__ == '__main__':
     main()
