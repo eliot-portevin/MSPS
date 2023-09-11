@@ -34,21 +34,22 @@ Before using this script, you'll need the following:
 
 ## Usage
 
-To use the script, follow these steps:
+### Command Line Arguments
 
-1. Open a terminal or command prompt.
+The script uses command line arguments to determine the synchronisation direction. You can use the following flags:
 
-2. Navigate to the directory where the script is located.
+- `--yt_to_sp`: Sync liked songs from YouTube Music to Spotify.
+- `--sp_to_yt`: Sync liked songs from Spotify to YouTube Music.
+- `--all`: Synchronize liked songs in both directions (YouTube Music to Spotify and Spotify to YouTube Music)
+- `--help`: Display explanation of command line arguments.
 
-3. Run the script by executing the following command:
+An example command to sync liked songs from YouTube Music to Spotify:
 
-   ```bash
-   python script_name.py
-   ```
+Sync liked songs from YouTube Music to Spotify:
 
-   Replace `script_name.py` with the actual name of the script file.
-
-4. Follow the on-screen instructions for authentication and synchronization.
+```
+python3 main.py --yt_to_sp
+```
 
 ## Authentication
 
@@ -97,11 +98,3 @@ After synchronization, you can check the log files for the results:
 - `yt_to_sp.log`: Contains information about songs successfully added to Spotify, songs already added, and songs not found on Spotify.
 
 - `sp_to_yt.log`: Contains information about songs successfully added to YouTube Music and songs not found on YouTube Music.
-
-## License
-
-This script is provided under the MIT License. Feel free to modify and distribute it as needed. Refer to the [LICENSE](LICENSE) file for more details.
-
----
-
-Please make sure to replace `script_name.py` with the actual name of the script file when providing instructions to users. Additionally, you may want to include a `LICENSE` file with the appropriate license text for your script.

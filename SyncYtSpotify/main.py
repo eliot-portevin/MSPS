@@ -22,25 +22,28 @@ def main():
 
     args = parser.parse_args()
 
-    # Authenticate to YouTube Music
-    yt = authenticate_yt_music()
+    if args.__sizeof__() == 1:
+        # Authenticate to YouTube Music
+        yt = authenticate_yt_music()
 
-    # Authenticate to Spotify
-    sp = authenticate_spotify()
+        # Authenticate to Spotify
+        sp = authenticate_spotify()
 
-    market = ["AD", "AR", "AT", "AU", "BE", "BG", "BO", "BR", "CA", "CH", "CL", "CO", "CR", "CY",
-              "CZ", "DE", "DK", "DO", "EC", "EE", "ES", "FI", "FR", "GB", "GR", "GT", "HK", "HN", "HU",
-              "ID", "IE", "IS", "IT", "JP", "LI", "LT", "LU", "LV", "MC", "MT", "MX", "MY", "NI", "NL",
-              "NO", "NZ", "PA", "PE", "PH", "PL", "PT", "PY", "SE", "SG", "SK", "SV", "TH", "TR", "TW",
-              "US", "UY", "VN"]
+        market = ["AD", "AR", "AT", "AU", "BE", "BG", "BO", "BR", "CA", "CH", "CL", "CO", "CR", "CY",
+                  "CZ", "DE", "DK", "DO", "EC", "EE", "ES", "FI", "FR", "GB", "GR", "GT", "HK", "HN", "HU",
+                  "ID", "IE", "IS", "IT", "JP", "LI", "LT", "LU", "LV", "MC", "MT", "MX", "MY", "NI", "NL",
+                  "NO", "NZ", "PA", "PE", "PH", "PL", "PT", "PY", "SE", "SG", "SK", "SV", "TH", "TR", "TW",
+                  "US", "UY", "VN"]
 
-    if args.yt2sp:
-        sync_yt_to_sp(yt, sp, market)
-    elif args.sp2yt:
-        sync_sp_to_yt(yt, sp)
-    elif args.all:
-        sync_yt_to_sp(yt, sp, market)
-        sync_sp_to_yt(yt, sp)
+        if args.yt2sp:
+            sync_yt_to_sp(yt, sp, market)
+        elif args.sp2yt:
+            sync_sp_to_yt(yt, sp)
+        elif args.all:
+            sync_yt_to_sp(yt, sp, market)
+            sync_sp_to_yt(yt, sp)
+    else:
+        parser.print_help()
 
 
 def print_console_title(title: str):
