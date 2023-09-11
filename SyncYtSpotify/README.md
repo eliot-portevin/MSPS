@@ -8,9 +8,7 @@ This Python script allows you to synchronise your liked songs between YouTube Mu
 - [Getting Started](#getting-started)
 - [Usage](#usage)
 - [Authentication](#authentication)
-- [Synchronisation](#synchronisation)
 - [Results](#results)
-- [License](#license)
 
 ## Prerequisites
 
