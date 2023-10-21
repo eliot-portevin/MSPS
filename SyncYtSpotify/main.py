@@ -23,7 +23,7 @@ def main():
 
     args = parser.parse_args()
 
-    if args.__sizeof__() == 1:
+    if any(vars(args).values()):
         # Authenticate to YouTube Music
         yt = authenticate_yt_music()
 
