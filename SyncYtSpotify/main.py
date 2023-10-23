@@ -19,10 +19,12 @@ for detailed explanations. The authentification process was copied from there.
 
 def main():
     parser = ArgumentParser(description='Synchronise your liked songs between YouTube Music and Spotify.')
-    parser.add_argument('--yt2sp', action='store_true', help='Sync liked songs from YouTube Music to Spotify')
-    parser.add_argument('--sp2yt', action='store_true', help='Sync liked songs from Spotify to YouTube Music')
-    parser.add_argument('--all', action='store_true', help='Sync liked songs from YouTube Music to Spotify and vice '
+    parser.add_argument('--yt2sp', action='store_true', help='Sync from YouTube Music to Spotify')
+    parser.add_argument('--sp2yt', action='store_true', help='Sync from Spotify to YouTube Music')
+    parser.add_argument('--all', action='store_true', help='Sync from YouTube Music to Spotify and vice '
                                                            'versa')
+    parser.add_argument('--playlists', action='store_true', help='Sync user playlists')
+    parser.add_argument('--likes', action='store_true', help='Sync liked songs')
 
     args = parser.parse_args()
 
@@ -39,9 +41,14 @@ def main():
                   "NO", "NZ", "PA", "PE", "PH", "PL", "PT", "PY", "SE", "SG", "SK", "SV", "TH", "TR", "TW",
                   "US", "UY", "VN"]
 
+        # Set default behaviour to sync likes
+        if not any([args.likes, args.playlists]):
+            args.likes = True
+
+        # Switch between different modes
         if args.yt2sp:
             yt2sp = Yt2Sp(yt, sp, market)
-            yt2sp.sync()
+            yt2sp.sync(args.likes, args.playlists)
         elif args.sp2yt:
             sp2yt = Sp2Yt(yt, sp)
             sp2yt.sync()
@@ -72,7 +79,8 @@ def authenticate_spotify() -> spotipy.Spotify:
         client_secret = data['client_secret']
         username = data['username']
 
-    sp_scope = "user-library-read user-library-modify"
+    sp_scope = ("user-library-read user-library-modify playlist-modify-public playlist-modify-private "
+                "playlist-read-private playlist-read-collaborative")
     sp_oauth = SpotifyOAuth(
         username=username,
         scope=sp_scope,
