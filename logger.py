@@ -3,7 +3,7 @@ from datetime import datetime
 
 class Logger:
     def __init__(self):
-        self.log_file = 'StreamingService.log'
+        self.log_file = 'streaming_service.log'
         self.clear_log()
 
     def log(self, message):

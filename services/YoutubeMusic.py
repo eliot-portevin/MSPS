@@ -1,10 +1,12 @@
 from os.path import exists
 from subprocess import call
+from tkinter import Tk, filedialog
+
 from ytmusicapi import YTMusic
 
-from Logger import Logger
-from StreamingService import StreamingService
-from CLI import *
+from logger import Logger
+from streaming_service import StreamingService
+from cli_functions import *
 from Track import Track
 
 
@@ -12,7 +14,7 @@ class YoutubeMusic(StreamingService):
 
     def __init__(self):
         super().__init__()
-        self.oauth_filename = '../oauth.json'
+        self.oauth_filename = 'oauth.json'
         self.fetcher = self.authenticate()
 
     def authenticate(self):
@@ -48,6 +50,23 @@ class YoutubeMusic(StreamingService):
             song_id = search_results[0]['videoId']
             self.fetcher.rate_song(song_id, 'LIKE')
             self.LOGGER.log(f'YouTube Music: Liked {track.get_title()} - {track.get_artist()}')
+
+    def download_track(self, track: Track):
+        # Ask where to download songs
+        root = Tk()
+        root.withdraw()
+
+        filepath = os.path.join(os.getcwd(), 'Downloads',
+                                f'{format_track_name(track.get_title(), track.get_artist())}.mp3')
+
+        if not os.path.exists(filepath):
+            search_results = self.fetcher.search(f'{track.get_title()} - {track.get_artist()}', filter='songs', limit=1)
+            track_id = search_results[0]['videoId']
+            track_url = f'https://music.youtube.com/watch?v={track_id}'
+            call(['yt-dlp', track_url, '-x', '--audio-format', 'mp3', '--audio-quality', '0', '--embed-metadata',
+                  '--embed-thumbnail', '-o',
+                  filepath])
+            self.LOGGER.log(f'YouTube Music: Downloaded {track.get_title()} - {track.get_artist()} to local storage')
 
 
 def extract_track_info(track):

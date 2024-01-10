@@ -1,14 +1,11 @@
 import json
 from os.path import exists
-from subprocess import call
 
 import spotipy
 from spotipy import SpotifyOAuth
-from ytmusicapi import YTMusic
 
-from Logger import Logger
-from StreamingService import StreamingService
-from CLI import *
+from cli_functions import *
+from streaming_service import StreamingService
 from Track import Track
 
 
@@ -16,17 +13,17 @@ class Spotify(StreamingService):
 
     def __init__(self):
         super().__init__()
-        self.oauth_filename = '../oauth_spotify.json'
+        self.oauth_filename = 'oauth_spotify.json'
         self.fetcher = self.authenticate()
 
     def authenticate(self):
-        if not exists('../oauth_spotify.json'):
+        if not exists('oauth_spotify.json'):
             print_console_title('Please follow the instructions to authenticate your Spotify account')
             client_id = input('Please enter your Spotify client id: ')
             client_secret = input('Please enter your Spotify client secret: ')
             username = input('Please enter your Spotify username: ')
 
-            with open('../oauth_spotify.json', 'w') as f:
+            with open('oauth_spotify.json', 'w') as f:
                 json.dump({'client_id': client_id, 'client_secret': client_secret, 'username': username}, f)
                 print('Saved authentication data to oauth_spotify.json')
 

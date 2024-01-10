@@ -28,5 +28,5 @@ def print_console_title(title: str):
                           '##########################\n')
 
 
-def get_search_string(item):
-    return item['artist'] + " - " + item['song']
+def format_track_name(title, artist):
+    return artist + " - " + title
