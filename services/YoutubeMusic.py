@@ -1,13 +1,11 @@
 from os.path import exists
 from subprocess import call
-from tkinter import Tk, filedialog
 
 from ytmusicapi import YTMusic
 
-from logger import Logger
-from streaming_service import StreamingService
-from cli_functions import *
 from Track import Track
+from cli_functions import *
+from streaming_service import StreamingService
 
 
 class YoutubeMusic(StreamingService):
@@ -52,10 +50,6 @@ class YoutubeMusic(StreamingService):
             self.LOGGER.log(f'YouTube Music: Liked {track.get_title()} - {track.get_artist()}')
 
     def download_track(self, track: Track):
-        # Ask where to download songs
-        root = Tk()
-        root.withdraw()
-
         filepath = os.path.join(os.getcwd(), 'Downloads',
                                 f'{format_track_name(track.get_title(), track.get_artist())}.mp3')
 

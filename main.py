@@ -14,21 +14,36 @@ def main():
     parser = ArgumentParser(description='Synchronise your music streaming services.')
     parser.add_argument('--source', choices=['yt', 'sp'], help='Source streaming service')
     parser.add_argument('--destination', choices=['yt', 'sp'], help='Destination streaming service')
-
+    parser.add_argument('--action', choices=['like', 'download'], help='Action to perform')
     args = parser.parse_args()
 
-    if args.source and args.destination:
-        switch = {
-            'yt': YoutubeMusic(),
-            'sp': Spotify()
-        }
+    if args.action:
+        if args.action == 'download' and args.source:
+            switch = {
+                'yt': YoutubeMusic(),
+                'sp': Spotify()
+            }
 
-        source = switch.get(args.source)
-        destination = switch.get(args.destination)
+            source = switch.get(args.source)
+            downloader = YoutubeMusic()
 
-        liked_tracks = source.get_liked_tracks(limit=10)
-        for track in liked_tracks:
-            destination.like_track(track)
+            liked_tracks = source.get_liked_tracks(limit=10)
+            for track in liked_tracks:
+                downloader.download_track(track)
+
+        elif args.action == 'like':
+            if args.source and args.destination:
+                switch = {
+                    'yt': YoutubeMusic(),
+                    'sp': Spotify()
+                }
+
+                source = switch.get(args.source)
+                destination = switch.get(args.destination)
+
+                liked_tracks = source.get_liked_tracks(limit=10)
+                for track in liked_tracks:
+                    destination.like_track(track)
 
     else:
         parser.print_help()
