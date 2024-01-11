@@ -37,3 +37,7 @@ class StreamingService(ABC):
     @abstractmethod
     def get_service_name(self):
         pass
+
+    @abstractmethod
+    def create_playlist(self, playlist):
+        pass

@@ -1,3 +1,4 @@
+import time
 from os.path import exists
 from subprocess import call
 
@@ -37,10 +38,25 @@ class YoutubeMusic(StreamingService):
         return [extract_track_info(track) for track in liked_tracks]
 
     def get_tracks_in_playlist(self, playlist_name: str):
-        pass
+        playlists = self.fetcher.get_library_playlists()
+        time.sleep(5)
+        playlist_id = [playlist['playlistId'] for playlist in playlists if playlist['title'] == playlist_name][0]
+        playlist = self.fetcher.get_playlist(playlist_id, 1000000)
 
-    def add_track_to_playlist(self, playlist_name: str, songs: list):
-        pass
+        return [extract_track_info(track) for track in playlist['tracks']]
+
+    def add_track_to_playlist(self, playlist_name: str, track: Track):
+        # Create playlist if it does not exist
+        if playlist_name not in self.get_all_playlist_names():
+            self.create_playlist(playlist_name)
+
+        # Add track to playlist
+        search_results = self.fetcher.search(f'{track.get_title()} - {track.get_artist()}', filter='songs', limit=1)
+
+        if len(search_results) == 1:
+            song_id = search_results[0]['videoId']
+            self.fetcher.add_playlist_items(playlist_name, [song_id])
+            self.LOGGER.log(f'YouTube Music: Added {track.get_title()} - {track.get_artist()} to {playlist_name}')
 
     def like_track(self, track: Track):
         search_results = self.fetcher.search(f'{track.get_title()} - {track.get_artist()}', filter='songs', limit=1)
@@ -68,6 +84,12 @@ class YoutubeMusic(StreamingService):
 
     def get_service_name(self):
         return self.service_name
+
+    def create_playlist(self, playlist_name):
+        if playlist_name not in self.get_all_playlist_names():
+            self.fetcher.create_playlist(playlist_name)
+            self.LOGGER.log(f'YouTube Music: Created playlist {playlist_name}')
+
 
 def extract_track_info(track):
     title = track.get('title')

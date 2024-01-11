@@ -1,3 +1,5 @@
+import time
+
 from simple_term_menu import TerminalMenu
 
 
@@ -16,10 +18,15 @@ class Menu:
 
         # Selection is None if the user pressed Esc, in which case a return is requested
         if selection is None:
-            return self.exit_text
+            return [self.exit_text]
 
-        # Returns an array with all selected items. Up to user to take 0th element if only one is expected
-        return [self.items[i] for i in selection]
+        # Returns a list with all selected items if there are multiple selections
+        if isinstance(selection, list):
+            return [self.items[i] for i in selection]
+        elif isinstance(selection, tuple):
+            return list(selection)
+        else:
+            return [self.items[selection]]
 
     def create_menu(self):
         cursor = "> "
@@ -50,8 +57,9 @@ class Menu:
                "\n"
 
     def has_requested_return(self, selection) -> bool:
-        # If selection is a list, check if any of the items requested a return
-        if isinstance(selection, list):
+        if selection is None:
+            return True
+        elif isinstance(selection, list):
             return any(item in [self.back_text, self.exit_text, None] for item in selection)
         else:
             return selection in [self.back_text, self.exit_text, None]

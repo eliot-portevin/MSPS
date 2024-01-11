@@ -8,7 +8,6 @@ from cli_functions import *
 from streaming_service import StreamingService
 from menu import Menu
 
-
 '''
 See https://colab.research.google.com/github/rruff82/misc/blob/main/YTM2Spotify_clean.ipynb#scrollTo=ehOBPh0NrZmE
 for detailed explanations. The authentification process was copied from there.
@@ -30,9 +29,9 @@ def run_menu_source(services):
             "\n"
     items = list(services.keys())
 
-    menu = Menu(title = title,
-                items = items,
-                exit_option= True)
+    menu = Menu(title=title,
+                items=items,
+                exit_option=True)
 
     running = True
 
@@ -46,7 +45,7 @@ def run_menu_source(services):
             source = services.get(selection)()
 
             run_menu_destination(
-                {key:services[key] for key in services if key != selection},
+                {key: services[key] for key in services if key != selection},
                 source)
 
 
@@ -56,8 +55,8 @@ def run_menu_destination(services, source: StreamingService):
     title = 'Which platform would you like to export to?'
     items = list(services.keys()) + [download_locally_string]
 
-    menu = Menu(title = title,
-                items = items)
+    menu = Menu(title=title,
+                items=items)
 
     running = True
 
@@ -98,11 +97,11 @@ def run_menu_transfer_content(source: StreamingService, destination: StreamingSe
             running = False
 
         else:
-            if selection == 'Liked Tracks':
+            if items.index('Liked Tracks') in selection:
                 transfer_likes(source, destination)
-
-            else:
-                transfer_playlists(source, destination, selection)
+                selection.remove(items.index('Liked Tracks'))
+            if len(selection) > 0:
+                transfer_playlists(source, destination, [items[i] for i in selection])
 
             running = False
 
@@ -112,11 +111,11 @@ def download_tracks(source: StreamingService):
             f'\nIt is about to import your liked songs from {source.get_service_name()}.' \
             f'\nHow many would you like to be downloaded (approximate number, the api tends to just do its thing)?'
     items = {'10': 10,
-            '50': 50,
-            '100': 100,
-            '200': 200,
-            '1000': 1000,
-            'all': 1000000}
+             '50': 50,
+             '100': 100,
+             '200': 200,
+             '1000': 1000,
+             'all': 1000000}
 
     menu = Menu(title, items)
     selection = menu.get_selection()
@@ -132,18 +131,27 @@ def download_tracks(source: StreamingService):
 
 
 def transfer_likes(source: StreamingService, destination: StreamingService):
-    # liked_tracks = source.get_liked_tracks()
+    liked_tracks = source.get_liked_tracks()
 
-    # for track in progressbar(liked_tracks, 'Liking Tracks'):
-    #     destination.like_track(track)
-
-    print(f'Syncing likes from {source.get_service_name} to {destination.get_service_name}')
-    time.sleep(3)
+    for track in progressbar(liked_tracks, 'Liking Tracks'):
+        destination.like_track(track)
 
 
 def transfer_playlists(source: StreamingService, destination: StreamingService, playlist_names: list):
-    print(f'Syncing playlists from {source.get_service_name} to {destination.get_service_name}')
-    time.sleep(3)
+    for playlist in playlist_names:
+        print(f'Importing {playlist} from {source.get_service_name()} to {destination.get_service_name()}')
+        tracks = source.get_tracks_in_playlist(playlist)
+
+        destination.create_playlist(playlist)
+        tracks_in_destination = destination.get_tracks_in_playlist(playlist)
+
+        for track in progressbar(tracks, f'Importing {playlist}'):
+            # Check if a similar track is already in the destination playlist
+            similar_track_present = any(track.is_similar(dest_track) for dest_track in tracks_in_destination)
+
+            if not similar_track_present:
+                destination.add_track_to_playlist(playlist, track)
+
 
 if __name__ == '__main__':
     main()
