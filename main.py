@@ -24,20 +24,20 @@ def main():
 
 # Menu responsible for determining which platform tracks will be imported from
 def run_menu_source(services):
-    title = "Hi! Welcome to the Music Streaming Platform Synchroniser." \
-            "\nPress Q or Esc to Quit." \
-            "\nPlease select the platform which you'd like to import from:" \
+    title = "Music Streaming Platform Synchronizer" \
+            "\n[Q]/[Esc] to Quit | Navigate with [J, K] or arrow keys, [Enter] to Confirm" \
+            "\nSelect the platform to import from:" \
             "\n"
     items = list(services.keys())
 
     menu = Menu(title = title,
                 items = items,
-                exitOption = True)
+                exit_option= True)
 
     running = True
 
     while running:
-        selection = menu.get_selection()
+        selection = menu.get_selection()[0]
 
         if menu.has_requested_return(selection):
             running = False
@@ -50,6 +50,7 @@ def run_menu_source(services):
                 source)
 
 
+# Menu responsible for determining which platform tracks will be exported to (includes downloading locally)
 def run_menu_destination(services, source: StreamingService):
     download_locally_string = 'Download locally'
     title = 'Which platform would you like to export to?'
@@ -61,7 +62,7 @@ def run_menu_destination(services, source: StreamingService):
     running = True
 
     while running:
-        selection = menu.get_selection()
+        selection = menu.get_selection()[0]
 
         if menu.has_requested_return(selection):
             running = False
@@ -73,7 +74,36 @@ def run_menu_destination(services, source: StreamingService):
         else:
             destination = services.get(selection)()
 
-            transfer_likes(source, destination)
+            run_menu_transfer_content(source, destination)
+
+            running = False
+
+
+# Menu responsible for determining what playlists are to be imported: liked tracks, playlists, etc.
+def run_menu_transfer_content(source: StreamingService, destination: StreamingService):
+    playlists = source.get_all_playlist_names()
+
+    title = f'What would you like to import from {source.get_service_name()} to {destination.get_service_name()}?' \
+            '\nPress Space or Tab to select multiple items. Press Enter to confirm.'
+    items = ['Liked Tracks'] + playlists
+
+    menu = Menu(title, items, multi_select=True)
+
+    running = True
+
+    while running:
+        selection = menu.get_selection()
+
+        if menu.has_requested_return(selection):
+            running = False
+
+        else:
+            if selection == 'Liked Tracks':
+                transfer_likes(source, destination)
+
+            else:
+                transfer_playlists(source, destination, selection)
+
             running = False
 
 
@@ -110,6 +140,10 @@ def transfer_likes(source: StreamingService, destination: StreamingService):
     print(f'Syncing likes from {source.get_service_name} to {destination.get_service_name}')
     time.sleep(3)
 
+
+def transfer_playlists(source: StreamingService, destination: StreamingService, playlist_names: list):
+    print(f'Syncing playlists from {source.get_service_name} to {destination.get_service_name}')
+    time.sleep(3)
 
 if __name__ == '__main__':
     main()

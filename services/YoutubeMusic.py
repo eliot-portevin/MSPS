@@ -26,7 +26,10 @@ class YoutubeMusic(StreamingService):
         return YTMusic(self.oauth_filename)
 
     def get_all_playlist_names(self):
-        pass
+        return [
+            playlist['title'] for playlist in self.fetcher.get_library_playlists()
+            if playlist['title'] not in self.ignored_playlists
+        ]
 
     def get_liked_tracks(self, limit=1000000):
         liked_tracks = self.fetcher.get_liked_songs(limit)['tracks']

@@ -8,6 +8,7 @@ class StreamingService(ABC):
 
     def __init__(self):
         self.LOGGER = Logger()
+        self.ignored_playlists = ['Liked Songs', 'Liked Music', 'Episodes for Later']
 
     @abstractmethod
     def authenticate(self):
@@ -34,5 +35,5 @@ class StreamingService(ABC):
         pass
 
     @abstractmethod
-    def get_service_name():
+    def get_service_name(self):
         pass

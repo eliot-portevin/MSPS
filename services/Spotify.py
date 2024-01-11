@@ -48,7 +48,18 @@ class Spotify(StreamingService):
         return spotipy.Spotify(auth_manager=sp_oauth)
 
     def get_all_playlist_names(self):
-        pass
+        playlists = []
+
+        offset = 0
+        limit_step = 50
+        response = self.fetcher.current_user_playlists(limit=limit_step, offset=offset)
+
+        while response['items']:
+            playlists.extend(response['items'])
+            offset += limit_step
+            response = self.fetcher.current_user_playlists(limit=limit_step, offset=offset)
+
+        return [playlist['name'] for playlist in playlists if playlist['name'] not in self.ignored_playlists]
 
     def get_liked_tracks(self, limit=1000000):
         offset = 0
