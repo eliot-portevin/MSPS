@@ -32,3 +32,7 @@ class StreamingService(ABC):
     @abstractmethod
     def like_track(self, track: Track):
         pass
+
+    @abstractmethod
+    def get_service_name():
+        pass

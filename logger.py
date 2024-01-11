@@ -1,22 +1,21 @@
 from datetime import datetime
+from os.path import exists
 
 
 class Logger:
     def __init__(self):
-        self.log_file = 'streaming_service.log'
-        self.clear_log()
+        self.date = datetime.now().strftime('%d-%m-%Y')
+        self.log_file = f'{self.date}.log'
+        self.initiate_log_file()
 
     def log(self, message):
-        date = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+        date = datetime.now().strftime('%H:%M:%S')
         message = f'[{date}] - {message}'
 
         with open(self.log_file, 'a') as f:
             f.write(message + '\n')
 
-    def clear_log(self):
-        with open(self.log_file, 'r') as f:
-            lines = f.readlines()
-
-        if len(lines) > 1000:
+    def initiate_log_file(self):
+        if not exists(self.log_file):
             with open(self.log_file, 'w') as f:
-                f.writelines(lines[500:])
+                f.write('')

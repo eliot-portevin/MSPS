@@ -14,6 +14,7 @@ class Spotify(StreamingService):
     def __init__(self):
         super().__init__()
         self.oauth_filename = 'oauth_spotify.json'
+        self.service_name = 'Spotify'
         self.fetcher = self.authenticate()
 
     def authenticate(self):
@@ -80,6 +81,8 @@ class Spotify(StreamingService):
             self.fetcher.current_user_saved_tracks_add([song_id])
             self.LOGGER.log(f'Spotify: Liked {track.get_title()} - {track.get_artist()}')
 
+    def get_service_name(self):
+        return self.service_name
 
 def extract_track_info(track):
     title = track['track']['name']

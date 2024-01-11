@@ -13,6 +13,7 @@ class YoutubeMusic(StreamingService):
     def __init__(self):
         super().__init__()
         self.oauth_filename = 'oauth.json'
+        self.service_name = 'YouTube Music'
         self.fetcher = self.authenticate()
 
     def authenticate(self):
@@ -62,6 +63,8 @@ class YoutubeMusic(StreamingService):
                   filepath])
             self.LOGGER.log(f'YouTube Music: Downloaded {track.get_title()} - {track.get_artist()} to local storage')
 
+    def get_service_name(self):
+        return self.service_name
 
 def extract_track_info(track):
     title = track.get('title')
