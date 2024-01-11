@@ -1,12 +1,10 @@
-from argparse import ArgumentParser
-from services.Spotify import Spotify
-from services.YoutubeMusic import YoutubeMusic
 import time
-from sys import exit
 
 from cli_functions import *
-from streaming_service import StreamingService
 from menu import Menu
+from services.Spotify import Spotify
+from services.YoutubeMusic import YoutubeMusic
+from streaming_service import StreamingService
 
 '''
 See https://colab.research.google.com/github/rruff82/misc/blob/main/YTM2Spotify_clean.ipynb#scrollTo=ehOBPh0NrZmE
