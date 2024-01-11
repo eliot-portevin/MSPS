@@ -1,0 +1,14 @@
+# Authentification files
+*.json
+
+# Files logging imports
+*.log
+
+# Jetbrains IDE files
+.idea/
+
+# Python cache files
+__pycache__/
+
+# Spotify authentification cache files
+*.cache-*
