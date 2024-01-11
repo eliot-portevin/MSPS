@@ -139,7 +139,6 @@ def transfer_likes(source: StreamingService, destination: StreamingService):
 
 def transfer_playlists(source: StreamingService, destination: StreamingService, playlist_names: list):
     for playlist in playlist_names:
-        print(f'Importing {playlist} from {source.get_service_name()} to {destination.get_service_name()}')
         tracks = source.get_tracks_in_playlist(playlist)
 
         destination.create_playlist(playlist)

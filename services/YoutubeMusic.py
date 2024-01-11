@@ -46,22 +46,27 @@ class YoutubeMusic(StreamingService):
         return [extract_track_info(track) for track in playlist['tracks']]
 
     def add_track_to_playlist(self, playlist_name: str, track: Track):
-        # Create playlist if it does not exist
-        if playlist_name not in self.get_all_playlist_names():
-            self.create_playlist(playlist_name)
+        try:
+            search_results = self.fetcher.search(f'{track.get_title()} - {track.get_artist()}', filter='songs', limit=1)
 
-        # Add track to playlist
-        search_results = self.fetcher.search(f'{track.get_title()} - {track.get_artist()}', filter='songs', limit=1)
+            playlists = self.fetcher.get_library_playlists()
+            playlist_id = [playlist['playlistId'] for playlist in playlists if playlist['title'] == playlist_name][0]
 
-        if len(search_results) == 1:
-            song_id = search_results[0]['videoId']
-            self.fetcher.add_playlist_items(playlist_name, [song_id])
-            self.LOGGER.log(f'YouTube Music: Added {track.get_title()} - {track.get_artist()} to {playlist_name}')
+            if len(search_results) == 0:
+                self.LOGGER.log(f'YouTube Music: Could not find {track.get_title()} - {track.get_artist()}')
+
+            else:
+                song_id = search_results[0]['videoId']
+
+                self.fetcher.add_playlist_items(playlist_id, [song_id])
+                self.LOGGER.log(f'YouTube Music: Added {track.get_title()} - {track.get_artist()} to {playlist_name}')
+        except Exception as e:
+            self.LOGGER.log(f'YouTube Music: Error adding track to playlist - {e}')
 
     def like_track(self, track: Track):
         search_results = self.fetcher.search(f'{track.get_title()} - {track.get_artist()}', filter='songs', limit=1)
 
-        if len(search_results) == 1:
+        if len(search_results) == 0:
             self.LOGGER.log(f'YouTube Music: Could not find {track.get_title()} - {track.get_artist()}')
 
         else:
@@ -75,19 +80,23 @@ class YoutubeMusic(StreamingService):
 
         if not os.path.exists(filepath):
             search_results = self.fetcher.search(f'{track.get_title()} - {track.get_artist()}', filter='songs', limit=1)
-            track_id = search_results[0]['videoId']
-            track_url = f'https://music.youtube.com/watch?v={track_id}'
-            call(['yt-dlp', track_url, '-x', '--audio-format', 'mp3', '--audio-quality', '0', '--embed-metadata',
-                  '--embed-thumbnail', '-o',
-                  filepath])
-            self.LOGGER.log(f'YouTube Music: Downloaded {track.get_title()} - {track.get_artist()} to local storage')
+
+            if len(search_results) == 0:
+                self.LOGGER.log(f'YouTube Music: Could not find {track.get_title()} - {track.get_artist()}')
+            else:
+                track_id = search_results[0]['videoId']
+                track_url = f'https://music.youtube.com/watch?v={track_id}'
+                call(['yt-dlp', track_url, '-x', '--audio-format', 'mp3', '--audio-quality', '0', '--embed-metadata',
+                      '--embed-thumbnail', '-o',
+                      filepath])
+                self.LOGGER.log(f'YouTube Music: Downloaded {track.get_title()} - {track.get_artist()} to local storage')
 
     def get_service_name(self):
         return self.service_name
 
     def create_playlist(self, playlist_name):
         if playlist_name not in self.get_all_playlist_names():
-            self.fetcher.create_playlist(playlist_name)
+            self.fetcher.create_playlist(playlist_name, 'Imported from Spotify')
             self.LOGGER.log(f'YouTube Music: Created playlist {playlist_name}')
 
 
