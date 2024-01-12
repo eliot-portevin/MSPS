@@ -1,5 +1,5 @@
 spotipy
 ytmusicapi
 
-fuzzywuzzy
+fuzzywuzzy[speedup]
 simple-term-menu
