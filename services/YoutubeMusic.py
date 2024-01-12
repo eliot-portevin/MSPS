@@ -1,7 +1,8 @@
 import os
 import time
 from subprocess import call
-from ytmusicapi import YTMusic
+import ytmusicapi
+import json
 
 from Track import Track
 from cli_functions import *
@@ -12,18 +13,32 @@ class YoutubeMusic(StreamingService):
 
     def __init__(self):
         super().__init__()
-        self.oauth_filename = 'oauth.json'
+        self.oauth_filename = 'config/oauth_ytmusic.json'
         self.service_name = 'YouTube Music'
         self.fetcher = self.authenticate()
 
     def authenticate(self):
-        # Create authentification files if inexistent
+        # Create authentication files if nonexistent
         if not os.path.exists(self.oauth_filename):
             print_message('Authenticating to YouTube Music.')
-            call(['ytmusicapi', 'oauth'])
 
-        # Authenticate to YouTube Music
-        return YTMusic(self.oauth_filename)
+            credentials = ytmusicapi.setup_oauth(open_browser=True)
+
+            with open(self.oauth_filename, 'w+') as f:
+                json.dump(credentials, f)
+
+        try:
+            with open(self.oauth_filename, 'r') as f:
+                loaded_credentials = json.load(f)
+
+            return ytmusicapi.YTMusic(self.oauth_filename)
+
+        except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
+            self.LOGGER.log('Error during Youtube Music authetification: {e}' \
+                f'\nDeleting {self.oauth_filename} and trying again.')
+
+            os.remove(self.oauth_filename)
+            self.authenticate()
 
     def get_all_playlist_names(self):
         return [
@@ -102,14 +117,10 @@ class YoutubeMusic(StreamingService):
 
 
 def extract_track_info(track):
-    title = track.get('title')
-
+    title = track.get('title', '')
     artists = track.get('artists', [])
-    artist = artists[0]['name'] if artists and artists[0].get('name') else None
-
+    artist = artists[0].get('name') if artists else None
     album_info = track.get('album', {})
-    album = album_info.get('name') if album_info and album_info.get('name') else None
-
+    album = album_info.get('name') if album_info else None
     duration = track.get('duration')
-
     return Track(title, artist, album, duration)
