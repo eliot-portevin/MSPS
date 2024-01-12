@@ -28,14 +28,13 @@ Users can then press [Enter] to confirm their selection.
 
 ## Dependencies
 
-### Python Libraries (install via `pip install foo`):
+### Python Libraries (install via `pip install -r requirements.txt`):
 
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi): Python library for interacting with the YouTube Music API.
 - [fuzzywuzzy](https://github.com/seatgeek/fuzzywuzzy): Python library for fuzzy string matching.
 - [spotipy](https://github.com/spotipy-dev/spotipy): Python library for interacting with the Spotify API.
 - [simple-term-menu](https://github.com/IngoMeyer441/simple-term-menu): Python library for creating command-line
   interfaces.
-- [abc](https://docs.python.org/3/library/abc.html): Abstract base classes for Python.
 
 ### Other Tools:
 

@@ -1,5 +1,3 @@
-from itertools import islice
-
 from cli_functions import *
 from menu import Menu
 from services.Spotify import Spotify
@@ -127,7 +125,10 @@ def download_tracks(source: StreamingService):
     tracks = source.get_liked_tracks(limit=limit)
     destination = YoutubeMusic()
 
-    for track in islice(tracks, limit):
+    for track in tracks:
+        if limit == 0:
+            break
+
         success = destination.download_track(track)
 
         if success:

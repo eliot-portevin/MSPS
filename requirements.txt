@@ -1,0 +1,5 @@
+spotipy
+ytmusicapi
+
+fuzzywuzzy
+simple-term-menu
