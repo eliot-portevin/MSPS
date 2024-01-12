@@ -2,7 +2,7 @@ from simple_term_menu import TerminalMenu
 
 
 class Menu:
-    def __init__(self, title, items, exit_option=False, multi_select=False):
+    def __init__(self, title: str, items: list, exit_option=False, multi_select=False):
         self.multiSelect = multi_select
         self.back_text = 'Back'
         self.exit_text = 'Exit'

@@ -74,7 +74,7 @@ class YoutubeMusic(StreamingService):
             self.fetcher.rate_song(song_id, 'LIKE')
             self.LOGGER.log(f'YouTube Music: Liked {track.get_title()} - {track.get_artist()}')
 
-    def download_track(self, track: Track):
+    def download_track(self, track: Track) -> bool:
         filepath = os.path.join(os.getcwd(), 'Downloads',
                                 f'{format_track_name(track.get_title(), track.get_artist())}.mp3')
 
@@ -83,6 +83,7 @@ class YoutubeMusic(StreamingService):
 
             if len(search_results) == 0:
                 self.LOGGER.log(f'YouTube Music: Could not find {track.get_title()} - {track.get_artist()}')
+                return False
             else:
                 track_id = search_results[0]['videoId']
                 track_url = f'https://music.youtube.com/watch?v={track_id}'
@@ -90,6 +91,7 @@ class YoutubeMusic(StreamingService):
                       '--embed-thumbnail', '-o',
                       filepath])
                 self.LOGGER.log(f'YouTube Music: Downloaded {track.get_title()} - {track.get_artist()} to local storage')
+                return True
 
     def get_service_name(self):
         return self.service_name

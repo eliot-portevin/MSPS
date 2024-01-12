@@ -1,4 +1,4 @@
-import time
+from itertools import islice
 
 from cli_functions import *
 from menu import Menu
@@ -115,17 +115,23 @@ def download_tracks(source: StreamingService):
              '1000': 1000,
              'all': 1000000}
 
-    menu = Menu(title, items)
+    menu = Menu(title, list(items))
     selection = menu.get_selection()
 
     if menu.has_requested_return(selection):
         return
 
     else:
-        limit = items.get(selection)
+        limit = items.get(selection[0])
 
-    print(f'Download of {limit} tracks has been requested')
-    time.sleep(5)
+    tracks = source.get_liked_tracks(limit=limit)
+    destination = YoutubeMusic()
+
+    for track in islice(tracks, limit):
+        success = destination.download_track(track)
+
+        if success:
+            limit -= 1
 
 
 def transfer_likes(source: StreamingService, destination: StreamingService):

@@ -19,7 +19,7 @@ class StreamingService(ABC):
         pass
 
     @abstractmethod
-    def get_liked_tracks(self):
+    def get_liked_tracks(self, limit: int = 1000000):
         pass
 
     @abstractmethod
