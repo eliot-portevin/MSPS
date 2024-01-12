@@ -1,6 +1,6 @@
 from simple_term_menu import TerminalMenu
 
-from cli_functions import *
+from utils.cli_functions import *
 
 
 class Menu:

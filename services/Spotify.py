@@ -5,7 +5,7 @@ from os.path import exists
 import spotipy
 from spotipy import SpotifyOAuth
 
-from cli_functions import *
+from utils.cli_functions import *
 from streaming_service import StreamingService
 from Track import Track
 

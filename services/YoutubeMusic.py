@@ -5,7 +5,7 @@ import ytmusicapi
 import json
 
 from Track import Track
-from cli_functions import *
+from utils.cli_functions import *
 from streaming_service import StreamingService
 
 

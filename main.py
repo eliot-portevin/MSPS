@@ -1,5 +1,5 @@
-from cli_functions import *
-from menu import Menu
+from utils.cli_functions import *
+from utils.menu import Menu
 from services.Spotify import Spotify
 from services.YoutubeMusic import YoutubeMusic
 from streaming_service import StreamingService

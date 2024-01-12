@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from logger import Logger
+from utils.logger import Logger
 from Track import Track
 
 
