@@ -30,3 +30,15 @@ def print_console_title(title: str):
 
 def format_track_name(title, artist):
     return artist + " - " + title
+
+def get_app_title():
+    return "" \
+           "\n.-.   .-. .----. .----..----. " \
+           "\n|  `.'  |{ {__  { {__  | {}  }" \
+           "\n| |\ /| |.-._} }.-._} }| .--' " \
+           "\n`-' ` `-'`----' `----' `-'    " \
+           "\n"
+
+def print_message(message: str):
+    print(get_app_title())
+    print(message)

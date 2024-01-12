@@ -1,7 +1,6 @@
+import os
 import time
-from os.path import exists
 from subprocess import call
-
 from ytmusicapi import YTMusic
 
 from Track import Track
@@ -19,8 +18,8 @@ class YoutubeMusic(StreamingService):
 
     def authenticate(self):
         # Create authentification files if inexistent
-        if not exists(self.oauth_filename):
-            print_console_title('Please follow the instructions to authenticate your Google account')
+        if not os.path.exists(self.oauth_filename):
+            print_message('Authenticating to YouTube Music.')
             call(['ytmusicapi', 'oauth'])
 
         # Authenticate to YouTube Music

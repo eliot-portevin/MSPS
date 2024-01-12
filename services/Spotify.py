@@ -20,7 +20,7 @@ class Spotify(StreamingService):
 
     def authenticate(self):
         if not exists('oauth_spotify.json'):
-            print_console_title('Please follow the instructions to authenticate your Spotify account')
+            print_message('Authenticating to Spotify.\n')
             client_id = input('Please enter your Spotify client id: ')
             client_secret = input('Please enter your Spotify client secret: ')
             username = input('Please enter your Spotify username: ')

@@ -1,5 +1,7 @@
 from simple_term_menu import TerminalMenu
 
+from cli_functions import *
+
 
 class Menu:
     def __init__(self, title: str, items: list, exit_option=False, multi_select=False):
@@ -43,16 +45,7 @@ class Menu:
         )
 
     def make_title_string(self, title: str):
-        return self.get_app_title() + f'\n{title}'
-
-    @staticmethod
-    def get_app_title():
-        return "" \
-               "\n.-.   .-. .----. .----..----. " \
-               "\n|  `.'  |{ {__  { {__  | {}  }" \
-               "\n| |\ /| |.-._} }.-._} }| .--' " \
-               "\n`-' ` `-'`----' `----' `-'    " \
-               "\n"
+        return get_app_title() + f'\n{title}'
 
     def has_requested_return(self, selection) -> bool:
         if selection is None:
