@@ -2,7 +2,7 @@
 *.json
 
 # Files logging imports
-*.log
+logs/
 
 # Jetbrains IDE files
 .idea/
