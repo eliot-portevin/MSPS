@@ -14,56 +14,57 @@ class Spotify(StreamingService):
 
     def __init__(self):
         super().__init__()
-        self.oauth_filename = 'config/oauth_spotify.json'
+        self.OAUTH_FILENAME = 'config/oauth_spotify.json'
+        self.MAX_AUTH_ATTEMPTS = 3
         self.service_name = 'Spotify'
         self.fetcher = self.authenticate()
 
     def authenticate(self):
-        try:
-            # Start authentification process if no oauth file is available
-            if not os.path.exists(self.oauth_filename):
-                print_message('Authenticating to Spotify.\n')
-                client_id = input('Please enter your Spotify client id: ')
-                client_secret = input('Please enter your Spotify client secret: ')
-                username = input('Please enter your Spotify username: ')
+        auth_attempts = 0
+        while auth_attempts < self.MAX_AUTH_ATTEMPTS:
+            try:
+                if not os.path.exists(self.OAUTH_FILENAME):
+                    print_message('Authenticating to Spotify.\n')
+                    client_id = input('Please enter your Spotify client id: ')
+                    client_secret = input('Please enter your Spotify client secret: ')
+                    username = input('Please enter your Spotify username: ')
 
-                with open(self.oauth_filename, 'w+') as f:
-                    json.dump({'client_id': client_id, 'client_secret': client_secret, 'username': username}, f)
-                    print('Saved authentication data to oauth_spotify.json')
+                    with open(self.OAUTH_FILENAME, 'w+') as f:
+                        json.dump({'client_id': client_id, 'client_secret': client_secret, 'username': username}, f)
+                        print('Saved authentication data to oauth_spotify.json')
 
-            # Load credentials from json and create fetcher
-            with open(self.oauth_filename, 'r') as f:
-                data = json.load(f)
+                with open(self.OAUTH_FILENAME, 'r') as f:
+                    data = json.load(f)
 
-            client_id = data['client_id']
-            client_secret = data['client_secret']
-            username = data['username']
+                client_id = data['client_id']
+                client_secret = data['client_secret']
+                username = data['username']
 
-            sp_scope = ("user-library-read"
-                        " user-library-modify"
-                        " playlist-read-private"
-                        " playlist-modify-public"
-                        " playlist-modify-private")
-            sp_oauth = SpotifyOAuth(
-                username=username,
-                scope=sp_scope,
-                client_id=client_id,
-                client_secret=client_secret,
-                redirect_uri="https://localhost:8888/callback",
-                open_browser=False
-            )
+                sp_scope = ("user-library-read"
+                            " user-library-modify"
+                            " playlist-read-private"
+                            " playlist-modify-public"
+                            " playlist-modify-private")
+                sp_oauth = SpotifyOAuth(
+                    username=username,
+                    scope=sp_scope,
+                    client_id=client_id,
+                    client_secret=client_secret,
+                    redirect_uri="https://localhost:8888/callback",
+                    open_browser=False
+                )
 
-            return spotipy.Spotify(auth_manager=sp_oauth)
+                return spotipy.Spotify(auth_manager=sp_oauth)
 
-        except (json.JSONDecodeError, FileNotFoundError, KeyError, SpotifyException) as e:
-            self.LOGGER.log(f'Error during Spotify authentication: {e}' \
-                '\nTrying again.')
+            except (json.JSONDecodeError, FileNotFoundError, KeyError, spotipy.SpotifyException) as e:
+                auth_attempts += 1
+                self.LOGGER.log(f'Error during Spotify authentication: {e}\nRetrying ({auth_attempts}/{self.MAX_AUTH_ATTEMPTS}).')
 
-            if os.path.exists(self.oauth_filename):
-                os.remove(self.oauth_filename)
-                self.LOGGER.log('Deleted the existing Spotify authentication file.')
+                if os.path.exists(self.OAUTH_FILENAME):
+                    os.remove(self.OAUTH_FILENAME)
+                    self.LOGGER.log('Deleted the existing Spotify authentication file.')
 
-            self.authenticate()
+        raise AuthenticationError('Failed to authenticate after multiple attempts.')
 
     def get_all_playlist_names(self):
         playlists = self.get_user_playlists()

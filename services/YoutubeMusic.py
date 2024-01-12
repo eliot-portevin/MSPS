@@ -13,32 +13,36 @@ class YoutubeMusic(StreamingService):
 
     def __init__(self):
         super().__init__()
-        self.oauth_filename = 'config/oauth_ytmusic.json'
+        self.OAUTH_FILENAME = 'config/oauth_ytmusic.json'
+        self.MAX_AUTH_ATTEMPTS = 3
         self.service_name = 'YouTube Music'
         self.fetcher = self.authenticate()
 
     def authenticate(self):
-        # Create authentication files if nonexistent
-        if not os.path.exists(self.oauth_filename):
-            print_message('Authenticating to YouTube Music.')
+        auth_attempts = 0
 
-            credentials = ytmusicapi.setup_oauth(open_browser=True)
+        while auth_attempts < self.MAX_AUTH_ATTEMPTS:
+            try:
+                # Create authentication files if nonexistent
+                if not os.path.exists(self.OAUTH_FILENAME):
+                    print_message('Authenticating to YouTube Music.')
+                    credentials = ytmusicapi.setup_oauth(open_browser=True)
 
-            with open(self.oauth_filename, 'w+') as f:
-                json.dump(credentials, f)
+                    with open(self.OAUTH_FILENAME, 'w+') as f:
+                        json.dump(credentials, f)
 
-        try:
-            with open(self.oauth_filename, 'r') as f:
-                loaded_credentials = json.load(f)
+                with open(self.OAUTH_FILENAME, 'r') as f:
+                    loaded_credentials = json.load(f)
 
-            return ytmusicapi.YTMusic(self.oauth_filename)
+                return ytmusicapi.YTMusic(self.OAUTH_FILENAME)
 
-        except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
-            self.LOGGER.log('Error during Youtube Music authetification: {e}' \
-                f'\nDeleting {self.oauth_filename} and trying again.')
+            except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
+                self.LOGGER.log(f'Error during Youtube Music authentication: {e}' \
+                                f'\nDeleting {self.OAUTH_FILENAME} and trying again.')
+                os.remove(self.OAUTH_FILENAME)
+                auth_attempts += 1
 
-            os.remove(self.oauth_filename)
-            self.authenticate()
+        raise AuthenticationError('Failed to authenticate after multiple attempts.')
 
     def get_all_playlist_names(self):
         return [
