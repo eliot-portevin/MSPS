@@ -14,6 +14,7 @@ class Spotify(StreamingService):
 
     def __init__(self):
         super().__init__()
+        self.OAUTH_PATH = 'config/'
         self.OAUTH_FILENAME = 'config/oauth_spotify.json'
         self.MAX_AUTH_ATTEMPTS = 3
         self.service_name = 'Spotify'
@@ -28,6 +29,8 @@ class Spotify(StreamingService):
                     client_id = input('Please enter your Spotify client id: ')
                     client_secret = input('Please enter your Spotify client secret: ')
                     username = input('Please enter your Spotify username: ')
+
+                    os.makedirs(os.path.dirname(self.OAUTH_PATH), exist_ok=True)
 
                     with open(self.OAUTH_FILENAME, 'w+') as f:
                         json.dump({'client_id': client_id, 'client_secret': client_secret, 'username': username}, f)
