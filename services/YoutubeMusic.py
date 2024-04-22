@@ -13,8 +13,7 @@ class YoutubeMusic(StreamingService):
 
     def __init__(self):
         super().__init__()
-        self.OAUTH_PATH = 'config/'
-        self.OAUTH_FILENAME = 'config/oauth_ytmusic.json'
+        self.OAUTH_FILENAME = 'oauth.json'
         self.MAX_AUTH_ATTEMPTS = 3
         self.service_name = 'YouTube Music'
         self.fetcher = self.authenticate()
@@ -27,15 +26,7 @@ class YoutubeMusic(StreamingService):
                 # Create authentication files if nonexistent
                 if not os.path.exists(self.OAUTH_FILENAME):
                     print_message('Authenticating to YouTube Music.')
-                    credentials = ytmusicapi.setup_oauth(open_browser=True)
-
-                    os.makedirs(os.path.dirname(self.OAUTH_PATH), exist_ok=True)
-
-                    with open(self.OAUTH_FILENAME, 'w+') as f:
-                        json.dump(credentials, f)
-
-                with open(self.OAUTH_FILENAME, 'r') as f:
-                    loaded_credentials = json.load(f)
+                    credentials = ytmusicapi.setup_oauth(self.OAUTH_FILENAME, open_browser=True)
 
                 return ytmusicapi.YTMusic(self.OAUTH_FILENAME)
 
