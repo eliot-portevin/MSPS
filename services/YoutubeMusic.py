@@ -7,7 +7,6 @@ import json
 from Track import Track
 from utils.cli_functions import *
 from streaming_service import StreamingService
-from exceptions import AuthenticationError
 
 
 class YoutubeMusic(StreamingService):
@@ -16,7 +15,6 @@ class YoutubeMusic(StreamingService):
         super().__init__()
         self.OAUTH_PATH = 'config/'
         self.OAUTH_FILENAME = 'config/oauth_ytmusic.json'
-        self.GENERATED_FILENAME = 'oauth.json'
         self.MAX_AUTH_ATTEMPTS = 3
         self.service_name = 'YouTube Music'
         self.fetcher = self.authenticate()
@@ -26,23 +24,28 @@ class YoutubeMusic(StreamingService):
 
         while auth_attempts < self.MAX_AUTH_ATTEMPTS:
             try:
-                # Create authentication file if nonexistent
+                # Create authentication files if nonexistent
                 if not os.path.exists(self.OAUTH_FILENAME):
                     print_message('Authenticating to YouTube Music.')
-                    credentials = ytmusicapi.setup_oauth()  # Generates a file named self.GENERATED_FILENAME
+                    credentials = ytmusicapi.setup_oauth(open_browser=True)
 
                     os.makedirs(os.path.dirname(self.OAUTH_PATH), exist_ok=True)
-                    os.rename(self.GENERATED_FILENAME, self.OAUTH_FILENAME)
+
+                    with open(self.OAUTH_FILENAME, 'w+') as f:
+                        json.dump(credentials, f)
+
+                with open(self.OAUTH_FILENAME, 'r') as f:
+                    loaded_credentials = json.load(f)
 
                 return ytmusicapi.YTMusic(self.OAUTH_FILENAME)
 
             except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
-                self.LOGGER.log(f'Error during Youtube Music authentication: {e}'
+                self.LOGGER.log(f'Error during Youtube Music authentication: {e}' \
                                 f'\nDeleting {self.OAUTH_FILENAME} and trying again.')
                 os.remove(self.OAUTH_FILENAME)
                 auth_attempts += 1
 
-        raise AuthenticationError('Failed to authenticate to YouTube Music after multiple attempts.')
+        raise AuthenticationError('Failed to authenticate after multiple attempts.')
 
     def get_all_playlist_names(self):
         return [
@@ -108,8 +111,7 @@ class YoutubeMusic(StreamingService):
                 call(['yt-dlp', track_url, '-x', '--audio-format', 'mp3', '--audio-quality', '0', '--embed-metadata',
                       '--embed-thumbnail', '-o',
                       filepath])
-                self.LOGGER.log(
-                    f'YouTube Music: Downloaded {track.get_title()} - {track.get_artist()} to local storage')
+                self.LOGGER.log(f'YouTube Music: Downloaded {track.get_title()} - {track.get_artist()} to local storage')
                 return True
 
     def get_service_name(self):
