@@ -32,12 +32,12 @@ def format_track_name(title, artist):
     return artist + " - " + title
 
 def get_app_title():
-    return "" \
-           "\n.-.   .-. .----. .----..----. " \
-           "\n|  `.'  |{ {__  { {__  | {}  }" \
-           "\n| |\ /| |.-._} }.-._} }| .--' " \
-           "\n`-' ` `-'`----' `----' `-'    " \
-           "\n"
+    return r"""
+.-.   .-. .----. .----..----. 
+|  `.'  |{ {__  { {__  | {}  }
+| |\ /| |.-._} }.-._} }| .--' 
+`-' ` `-'`----' `----' `-'    
+"""
 
 def print_message(message: str):
     print(get_app_title())
