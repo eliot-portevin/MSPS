@@ -8,6 +8,7 @@ from spotipy import SpotifyOAuth
 from utils.cli_functions import *
 from streaming_service import StreamingService
 from Track import Track
+from utils.exceptions import AuthenticationError
 
 
 class Spotify(StreamingService):
@@ -53,7 +54,7 @@ class Spotify(StreamingService):
                     scope=sp_scope,
                     client_id=client_id,
                     client_secret=client_secret,
-                    redirect_uri="https://localhost:8888/callback",
+                    redirect_uri="http://127.0.0.1:8000/callback",
                     open_browser=False
                 )
 
