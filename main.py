@@ -3,6 +3,9 @@ from utils.menu import Menu
 from services.Spotify import Spotify
 from services.YoutubeMusic import YoutubeMusic
 from streaming_service import StreamingService
+import os
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 '''
 See https://colab.research.google.com/github/rruff82/misc/blob/main/YTM2Spotify_clean.ipynb#scrollTo=ehOBPh0NrZmE
@@ -102,7 +105,10 @@ def run_menu_transfer_content(source: StreamingService, destination: StreamingSe
             running = False
 
 
-def download_tracks(source: StreamingService):
+# Download tracks locally using multiple threads. Each thread has its own YoutubeMusic instance to avoid synchronisation
+# issues. The lowest of 8 or (2 * CPU cores) threads is used.
+
+def _prompt_download_limit(source: StreamingService):
     title = 'MSPS uses yt-dlp to download your tracks from the Youtube Music database.' \
             f'\nIt is about to import your liked songs from {source.get_service_name()}.' \
             f'\nHow many would you like to be downloaded (approximate number, the api tends to just do its thing)?'
@@ -117,22 +123,74 @@ def download_tracks(source: StreamingService):
     selection = menu.get_selection()
 
     if menu.has_requested_return(selection):
+        return None
+
+    return items.get(selection[0])
+
+
+# Worker function for downloading a single track, used by {_run_downloads}
+def _worker(track, thread_local):
+    os.makedirs(os.path.join(os.getcwd(), 'Downloads'), exist_ok=True)  # Ensure Downloads directory exists
+
+    # Get or create thread-local YoutubeMusic instance
+    dest = getattr(thread_local, 'destination', None)
+    if dest is None:
+        dest = YoutubeMusic()
+        thread_local.destination = dest
+
+    try:
+        return dest.download_track(track)
+    except Exception as e:
+        try:
+            dest.LOGGER.log(f'Error downloading {track.get_title()} - {track.get_artist()}: {e}')
+        except Exception:
+            print(f'Error downloading {track.get_title()} - {track.get_artist()}: {e}')
+        return False
+
+
+# Run the downloads using a thread pool and track progress
+def _run_downloads(tracks, max_workers):
+    thread_local = threading.local()
+
+    downloaded = 0
+    total = len(tracks)
+
+    print(f'Starting downloads with {max_workers} worker(s). Attempting {total} track(s).')
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(_worker, track, thread_local): track for track in tracks}
+
+        for future in as_completed(futures):
+            try:
+                success = future.result()
+                if success:
+                    downloaded += 1
+            except Exception as e:
+                track = futures.get(future)
+                print(f'Unhandled error downloading {track.get_title() if track else "<unknown>"}: {e}')
+
+            print(f'Downloaded {downloaded}/{total} (attempted {len([f for f in futures if f.done()])})', end='\r')
+
+    return downloaded, total
+
+
+# High-level orchestration for downloading liked tracks
+def download_tracks(source: StreamingService):
+    limit = _prompt_download_limit(source)
+    if limit is None:
         return
 
-    else:
-        limit = items.get(selection[0])
+    tracks = source.get_liked_tracks(limit=limit)  # Limit is just a suggestion to the API, may return more
 
-    tracks = source.get_liked_tracks(limit=limit)
-    destination = YoutubeMusic()
+    if not tracks:
+        print('No tracks found to download.')
+        return
 
-    for track in tracks:
-        if limit == 0:
-            break
+    max_workers = os.cpu_count() * 2 if os.cpu_count() else 4
 
-        success = destination.download_track(track)
+    downloaded, total = _run_downloads(tracks, max_workers)
 
-        if success:
-            limit -= 1
+    print(f"\nFinished. Successfully downloaded {downloaded}/{total} track(s).")
 
 
 def transfer_likes(source: StreamingService, destination: StreamingService):

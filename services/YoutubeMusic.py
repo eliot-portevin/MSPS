@@ -1,8 +1,7 @@
 import os
 import time
-from subprocess import call
+import subprocess
 import ytmusicapi
-import json
 
 from Track import Track
 from utils.cli_functions import *
@@ -110,9 +109,24 @@ class YoutubeMusic(StreamingService):
             else:
                 track_id = search_results[0]['videoId']
                 track_url = f'https://music.youtube.com/watch?v={track_id}'
-                call(['yt-dlp', track_url, '-x', '--audio-format', 'mp3', '--audio-quality', '0', '--embed-metadata',
-                      '--embed-thumbnail', '-o',
-                      filepath])
+
+                cmd = ['yt-dlp', track_url, '-x', '--audio-format', 'mp3', '--audio-quality', '0', '--embed-metadata',
+                       '--embed-thumbnail', '--no-progress', '--no-warnings', '-o', filepath]
+
+                try:
+                    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)  # Try to run yt-dlp silently
+                except Exception as e:  # Subprocess failed to start
+                    self.LOGGER.log(f'YouTube Music: Failed to start yt-dlp for {track.get_title()} - {track.get_artist()}: {e}')
+                    print(f'yt-dlp start error for {track.get_title()} - {track.get_artist()}: {e}')
+                    return False
+
+                if result.returncode != 0:  # yt-dlp encountered an error
+                    stderr_text = result.stderr.decode(errors='replace') if result.stderr else ''
+                    self.LOGGER.log(f'YouTube Music: yt-dlp failed for {track.get_title()} - {track.get_artist()}: {stderr_text}')
+                    print(f'yt-dlp error for {track.get_title()} - {track.get_artist()}:')
+                    print(stderr_text)
+                    return False
+
                 self.LOGGER.log(f'YouTube Music: Downloaded {track.get_title()} - {track.get_artist()} to local storage')
                 return True
 
