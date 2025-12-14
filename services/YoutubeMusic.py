@@ -7,6 +7,7 @@ import json
 from Track import Track
 from utils.cli_functions import *
 from streaming_service import StreamingService
+from utils.exceptions import AuthenticationError
 
 
 class YoutubeMusic(StreamingService):
@@ -20,7 +21,10 @@ class YoutubeMusic(StreamingService):
         self.fetcher = self.authenticate()
 
     def authenticate(self):
-        auth_attempts = 0
+        # Deprecated:
+        # OAuth has stopped working, so it has been replaced with the more inconvenient browser authentication.
+        # This process has to be done manually by the user prior to running the script (see README.md).
+        '''auth_attempts = 0
 
         while auth_attempts < self.MAX_AUTH_ATTEMPTS:
             try:
@@ -28,7 +32,7 @@ class YoutubeMusic(StreamingService):
                 if not os.path.exists(self.OAUTH_FILENAME):
                     os.makedirs(self.OAUTH_PATH, exist_ok=True)
                     print_message('Authenticating to YouTube Music.')
-                    credentials = ytmusicapi.setup_oauth(self.OAUTH_FILENAME, open_browser=True)
+                    credentials = ytmusicapi.setup_oauth(client_id=None, client_secret=None, filepath=self.OAUTH_FILENAME, open_browser=True)
 
                 return ytmusicapi.YTMusic(self.OAUTH_FILENAME)
 
@@ -38,7 +42,12 @@ class YoutubeMusic(StreamingService):
                 os.remove(self.OAUTH_FILENAME)
                 auth_attempts += 1
 
-        raise AuthenticationError('Failed to authenticate after multiple attempts.')
+        raise AuthenticationError('Failed to authenticate after multiple attempts.')'''
+
+        try:
+            return ytmusicapi.YTMusic("config/auth_ytmusic.json")
+        except Exception as e:
+            raise AuthenticationError(f'Failed to authenticate: {e}')
 
     def get_all_playlist_names(self):
         return [
