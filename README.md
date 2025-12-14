@@ -38,22 +38,28 @@ Users can then press [Enter] to confirm their selection.
 
 ### Other Tools:
 
-- [youtube-dl](https://github.com/ytdl-org/youtube-dl): Download tracks from YouTube Music.
+- [youtube-dl](https://github.com/ytdl-org/youtube-dl): Download tracks from YouTube Music. **Note:** Requires python
+  3.10 or higher.
 - [ffmpeg](https://ffmpeg.org/): Convert downloaded tracks to mp3 format and embed metadata.
 
 ## Getting Started
 
 1. Install dependencies (see above).
 2. Configure API keys for the desired music streaming services:
-    - YouTube Music: You will be prompted to open a link in your browser to allow access to your Google account when
-      running the script for the first time (if either your source or destination platform is YouTube Music).
-    - Spotify: Follow the
-      instructions [here](https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app)
-      to
-      register your app and obtain a client ID and client secret.
-      You will be asked to enter these when running the
-      script for the first time (if either your source or destination platform is Spotify).
-3. Run the synchronisation script: `python main.py`
+   - **YouTube Music** (*Authentication to YouTube Music is compulsory since this is where all tracks are downloaded from*)
+       Unfortunately, automated authentication has stopped working for the **ytmusicapi** module. Thus, manual browser authentication is now necessary. To do so, follow these [steps](https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html):
+       - Open a Firefox browser tab (it isn't guaranteed that other browsers will work).
+       - Open a [YouTube Music](https://music.youtube.com/) tab and make sure that you are logged in. Close the YouTube Music tab.
+       - Open the developer tools pane, and navigate to the **Network** tab.
+       - Open a YouTube Music tab, and look at the requests in the developer pane. Pick any of the requests, so long as it contains the following details: `Status` 200, `Method` POST, `Domain` youtube.music.com, and so on.
+       - Right-click on the request and select *Copy Request Headers*.
+       - Open a terminal window, and navigate to the **MSPS** directory. On Windows, insert the following command:
+           - `ytmusicapi browser [paste request headers] --file config/auth_ytmusic.json`
+       - On Mac, only 1024 can be pasted to std input. Thus, the request headers have to be piped to the **ytmusicapi** command as such:
+           - `pbpaste | ytmusicapi browser --file config/auth_ytmusic.json`
+     - **Spotify**
+      Follow the instructions [here](https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app) to register your app and obtain a client ID and client secret. You will be asked to enter these when running the script for the first time (if either your source or destination platform is Spotify).
+3. Run the script: `python main.py`
 
 ## Future Tasks
 
